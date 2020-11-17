@@ -12,7 +12,7 @@ requirements = ['numpy']
 setup(
     author="Todd Young",
     author_email='youngmt1@ornl.gov',
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
