@@ -41,6 +41,53 @@ class Tensor:
     def __repr__(self) -> str:
         return f"Tensor({self.data}, requires_grad={self.requires_grad})"
 
+    def backward(self, grad: "Tensor" = None) -> None:
+        assert self.requires_grad, "Called backward on non-requires-grad tensor"
+
+        if grad is None:
+            if self.shape == ():
+                grad = Tensor(1)
+            else:
+                raise RuntimeError("grad must be specified for nonzero tensor.")
+
+        self.grad.data += grad.data
+
+        for dependency in self.depends_on:
+            backward_grad = dependency.grad_fn(grad.data)
+            dependency.tensor.backward(Tensor(backward_grad))
+
+    def sum(self) -> "Tensor":
+        return tensor_sum(self)
+
+
+def tensor_sum(t: Tensor) -> Tensor:
+    r"""Sum a tensor
+
+    Args:
+        t: tensor to be summed
+
+    Returns:
+        the sum, zero-dimensional tensor
+    """
+    data = t.data.sum()
+    requires_grad = t.requires_grad
+
+    if requires_grad:
+
+        def grad_fn(grad: np.ndarray) -> np.ndarray:
+            r"""The gradient is a 0-tensor
+
+            Each element contributes a gradient of 0-tensor (1).
+            """
+            return grad * np.ones_like(t.data)
+
+        depends_on = [Dependency(t, grad_fn)]
+
+    else:
+        depends_on = []
+
+    return Tensor(data, requires_grad, depends_on)
+
 
 def ensure_array(arrayable: Arrayable) -> np.ndarray:
     r"""Ensure arrayable type is an array"""
