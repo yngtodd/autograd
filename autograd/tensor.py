@@ -29,7 +29,7 @@ class Tensor:
         self.requires_grad = requires_grad
         self.depends_on = depends_on or []
         self.shape = self.data.shape
-        self.grad: Optional[Tensor] = None
+        self.grad: Optional['Tensor'] = None
 
         if self.requires_grad:
             self.zero_grad()
@@ -41,7 +41,7 @@ class Tensor:
     def __repr__(self) -> str:
         return f"Tensor({self.data}, requires_grad={self.requires_grad})"
 
-    def backward(self, grad: Tensor = None) -> None:
+    def backward(self, grad: 'Tensor' = None) -> None:
         assert self.requires_grad, "Called backward on non-requires-grad tensor"
 
         if grad is None:
@@ -56,7 +56,7 @@ class Tensor:
             backward_grad = dependency.grad_fn(grad.data)
             dependency.tensor.backward(Tensor(backward_grad))
 
-    def sum(self) -> Tensor:
+    def sum(self) -> 'Tensor':
         return tensor_sum(self)
 
 
