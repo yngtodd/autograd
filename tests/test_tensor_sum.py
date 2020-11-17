@@ -4,15 +4,19 @@ from autograd.tensor import Tensor
 
 
 def test_integer_grad(integer):
-    t1 = Tensor(integer, requires_grad=True)
-    t2 = t1.sum()
-    t2.backward()
-    assert t1.grad.data.item() == 1
+    t = _sum_tensor(integer)
+    assert t.grad.data.item() == 1
 
 
 def test_array_grad(array):
-    t1 = Tensor(array, requires_grad=True)
+    t = _sum_tensor(array)
+    ones = [1 for x in range(len(array))]
+    assert (t.grad.data == ones).all()
+
+
+def _sum_tensor(data):
+    t1 = Tensor(data, requires_grad=True)
     t2 = t1.sum()
     t2.backward()
-    ones = [1 for x in range(len(array))]
-    assert (t1.grad.data == ones).all()
+    return t1
+
