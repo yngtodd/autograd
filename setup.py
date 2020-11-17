@@ -7,7 +7,7 @@ with open('README.md') as readme_file:
 
 setup_requirements = ['pytest-runner', ]
 test_requirements = ['pytest>=3', 'numpy']
-requirements = []
+requirements = ['numpy']
 
 setup(
     author="Todd Young",
